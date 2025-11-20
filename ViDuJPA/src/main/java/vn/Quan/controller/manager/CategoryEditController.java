@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import vn.Quan.entity.CategoryEntity;
 import vn.Quan.entity.UserEntity;
 import vn.Quan.service.ICategoryService;
@@ -36,13 +37,18 @@ public class CategoryEditController extends HttpServlet {
         req.getRequestDispatcher("/views/manager/category-edit.jsp").forward(req, resp);
     }
 
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         req.setCharacterEncoding("UTF-8");
+
         HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute(Constant.SESSION_LOGIN) == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
         UserEntity user = (UserEntity) session.getAttribute(Constant.SESSION_LOGIN);
 
         int id = Integer.parseInt(req.getParameter("cate_id"));
@@ -55,20 +61,22 @@ public class CategoryEditController extends HttpServlet {
             return;
         }
 
-        // KIỂM TRA QUYỀN
-        if (cate.getUser().getId() != user.getId()) {
+        // IF NOT MANAGER → must check owner
+        if (user.getRoleid() != 2 && cate.getUser().getId() != user.getId()) {
             resp.sendRedirect(req.getContextPath() + "/manager/home");
             return;
         }
 
         Part file = req.getPart("iconFile");
-        String fileName = file.getSubmittedFileName();
+        String fileName = (file != null) ? file.getSubmittedFileName() : null;
 
         String uploadPath = req.getServletContext().getRealPath("/uploads/category/");
         String finalFile = cate.getIcons();
 
+        // Replace new image
         if (fileName != null && !fileName.isEmpty()) {
 
+            // delete old file
             File oldFile = new File(uploadPath + cate.getIcons());
             if (oldFile.exists()) oldFile.delete();
 
@@ -84,6 +92,7 @@ public class CategoryEditController extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/manager/home");
         } catch (Exception e) {
             req.setAttribute("alert", e.getMessage());
+            req.setAttribute("cate", cate);
             req.getRequestDispatcher("/views/manager/category-edit.jsp").forward(req, resp);
         }
     }

@@ -23,10 +23,15 @@ public class CategoryDeleteController extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
+
+        if (session == null || session.getAttribute(Constant.SESSION_LOGIN) == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
         UserEntity user = (UserEntity) session.getAttribute(Constant.SESSION_LOGIN);
 
         int id = Integer.parseInt(req.getParameter("id"));
-
         CategoryEntity cate = cateService.findById(id);
 
         if (cate == null) {
@@ -34,7 +39,7 @@ public class CategoryDeleteController extends HttpServlet {
             return;
         }
 
-        if (cate.getUser().getId() != user.getId()) {
+        if (user.getRoleid() != 2 && cate.getUser().getId() != user.getId()) {
             resp.sendRedirect(req.getContextPath() + "/manager/home");
             return;
         }
@@ -46,7 +51,7 @@ public class CategoryDeleteController extends HttpServlet {
         }
 
         try {
-            cateService.delete(id, user.getId());
+            cateService.delete(id, cate.getUser().getId());
         } catch (Exception e) {
             req.setAttribute("alert", e.getMessage());
         }
