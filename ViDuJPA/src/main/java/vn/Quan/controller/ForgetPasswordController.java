@@ -35,7 +35,6 @@ public class ForgetPasswordController extends HttpServlet {
             return;
         }
 
-        // Dùng JPA để tìm user
         UserEntity user = service.findByEmail(email);
 
         if (user == null) {

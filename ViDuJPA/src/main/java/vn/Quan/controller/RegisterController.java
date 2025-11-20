@@ -43,7 +43,6 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra trùng (dùng JPA)
         if (service.checkExistUsername(username)) {
             req.setAttribute("alert", "Tài khoản đã tồn tại!");
             req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
@@ -60,7 +59,6 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Tạo user mới
         UserEntity newUser = new UserEntity();
         newUser.setUsername(username);
         newUser.setPassword(password);
@@ -68,7 +66,7 @@ public class RegisterController extends HttpServlet {
         newUser.setFullname(fullname);
         newUser.setPhone(phone);
         newUser.setImages("default.png");
-        newUser.setRoleid(1); // mặc định user
+        newUser.setRoleid(1);
 
         try {
             service.create(newUser);

@@ -33,7 +33,6 @@ public class LogoutController extends HttpServlet {
         cookie.setPath("/");
         resp.addCookie(cookie);
 
-        // Quay về login
         resp.sendRedirect(req.getContextPath() + "/login");
     }
 }

@@ -63,7 +63,6 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        // Đăng nhập bằng JPA
         UserEntity user = service.login(username, password);
 
         if (user == null) {
@@ -83,7 +82,6 @@ public class LoginController extends HttpServlet {
             clearRememberMe(resp);
         }
 
-        // Chuyển hướng theo ROLE
         int role = user.getRoleid();
 
         if (role == 3) {
@@ -97,7 +95,7 @@ public class LoginController extends HttpServlet {
 
     private void saveRememberMe(HttpServletResponse resp, String username) {
         Cookie cookie = new Cookie(Constant.COOKIE_REMEMBER, username);
-        cookie.setMaxAge(60 * 60 * 24 * 7); // 7 ngày
+        cookie.setMaxAge(60 * 60 * 24 * 7); 
         cookie.setPath("/");
         resp.addCookie(cookie);
     }

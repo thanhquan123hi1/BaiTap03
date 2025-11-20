@@ -61,7 +61,6 @@ public class CategoryEditController extends HttpServlet {
             return;
         }
 
-        // IF NOT MANAGER → must check owner
         if (user.getRoleid() != 2 && cate.getUser().getId() != user.getId()) {
             resp.sendRedirect(req.getContextPath() + "/manager/home");
             return;
@@ -73,10 +72,8 @@ public class CategoryEditController extends HttpServlet {
         String uploadPath = req.getServletContext().getRealPath("/uploads/category/");
         String finalFile = cate.getIcons();
 
-        // Replace new image
         if (fileName != null && !fileName.isEmpty()) {
 
-            // delete old file
             File oldFile = new File(uploadPath + cate.getIcons());
             if (oldFile.exists()) oldFile.delete();
 
